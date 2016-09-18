@@ -15,10 +15,10 @@ import data.HtmlEvent;
 import display.Screen;
 
 public class IcsParser {
-	
+
 	ArrayList<HtmlEvent> eventInfos = new ArrayList<>();
 	Screen screen;
-
+	
 	public void startProcess(Screen screen, String baseurl) {
 		this.screen = screen;
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -30,7 +30,6 @@ public class IcsParser {
 			cal.add(Calendar.DATE, 7);
 			screen.addInfo("");
 		}
-		// addTestData();
 		if (eventInfos.size() > 0) {
 			screen.addInfo("Starting to parse information into iCal format");
 			IcsGenerator generator = new IcsGenerator(eventInfos);
@@ -47,12 +46,12 @@ public class IcsParser {
 			screen.addInfo("Program finished with getting " + eventInfos.size() + " event.");
 		}
 	}
-	
+
 	private String addUrlTimeParameters(String format) {
 		String parts[] = format.split("-");
 		return "&day=" + parts[2] + "&month=" + parts[1] + "&year=" + parts[0] + "&goto=Datum+anzeigen";
 	}
-
+	
 	private void parseRaplaUrl(String url) {
 		try {
 			Document doc = Jsoup.connect(url).get();
@@ -90,19 +89,19 @@ public class IcsParser {
 			e.printStackTrace();
 		}
 	}
-
-	private static boolean checkIfRoom(String text) {
+	
+	private boolean checkIfRoom(String text) {
 		if (text.startsWith("A") || text.startsWith("B") || text.startsWith("C") || text.startsWith("D") || text.startsWith("E") || text.startsWith("F")) {
 			return true;
 		}
 		return false;
 	}
-	
-	private static HtmlEvent createEvent(String input) {
+
+	private HtmlEvent createEvent(String input) {
 		String parts[] = input.split(" ");
 		String times[] = parts[1].split("-");
 		HtmlEvent event = new HtmlEvent(parts[0], parts[0], times[0], times[1]);
 		return event;
 	}
-
+	
 }
