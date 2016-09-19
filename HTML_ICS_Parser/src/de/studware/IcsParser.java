@@ -18,14 +18,17 @@ public class IcsParser {
 
 	ArrayList<HtmlEvent> eventInfos = new ArrayList<>();
 	Screen screen;
+	int currentWeek;
 	
 	public void startProcess(Screen screen, String baseurl) {
 		this.screen = screen;
+		eventInfos.clear();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar cal = Calendar.getInstance();
 		String docName = "Calendar-Export.ics";
-		for (int i = 0; i < 6; i++) {
-			screen.addInfo("Getting events for week " + cal.get(Calendar.WEEK_OF_YEAR));
+		for (int i = 0; i < 5; i++) {
+			currentWeek = cal.get(Calendar.WEEK_OF_YEAR);
+			screen.addInfo("Getting events for week " + currentWeek);
 			parseRaplaUrl(baseurl + addUrlTimeParameters(dateFormat.format(cal.getTime())));
 			cal.add(Calendar.DATE, 7);
 			screen.addInfo("");
@@ -63,7 +66,7 @@ public class IcsParser {
 					Elements divs = element.getElementsByTag("div");
 					for (Element div : divs) {
 						if (!div.text().contains("zuletzt")) {
-							newEvent = createEvent(div.text().substring(3));
+							newEvent = createEvent(div.text());
 							Elements allStrong = element.getElementsByTag("strong");
 							for (Element strong : allStrong) {
 								newEvent.setCategorie(strong.text());
@@ -74,9 +77,7 @@ public class IcsParser {
 							}
 						}
 					}
-					System.out.println(element.hasClass("resource"));
 					if (element.hasClass("resource") && checkIfRoom(element.text())) {
-						System.out.println("HI" + element.text());
 						newEvent.addEventRoom(element.text());
 					}
 				}
@@ -98,10 +99,40 @@ public class IcsParser {
 	}
 
 	private HtmlEvent createEvent(String input) {
+		HtmlEvent event;
 		String parts[] = input.split(" ");
-		String times[] = parts[1].split("-");
-		HtmlEvent event = new HtmlEvent(parts[0], parts[0], times[0], times[1]);
+		if(!input.contains("wöchentlich") && !input.contains("Wochen")) {
+			String times[] = parts[2].split("-");
+			event = new HtmlEvent(parts[1], parts[1], times[0], times[1]);
+		} else {
+			String times[] = parts[1].split("-");
+			SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yy");
+			Calendar cal = Calendar.getInstance();
+			cal.set(Calendar.WEEK_OF_YEAR, currentWeek);        
+			cal.set(Calendar.DAY_OF_WEEK, getDayFromDigit(parts[0]));
+			parts[0] = sdf.format(cal.getTime());
+			event = new HtmlEvent(parts[0], parts[0], times[0], times[1]);
+		}
 		return event;
+	}
+	
+	private int getDayFromDigit(String digit) {
+		switch(digit) {
+		case "Mo":
+			return 2;
+		case "Di":
+			return 3;
+		case "Mi":
+			return 4;
+		case "Do":
+			return 5;
+		case "Fr":
+			return 6;
+		case "Sa":
+			return 7;
+		default:
+			return 1;
+		}
 	}
 	
 }

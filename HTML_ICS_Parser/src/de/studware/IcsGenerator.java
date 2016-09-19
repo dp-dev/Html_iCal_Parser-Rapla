@@ -1,8 +1,10 @@
 package de.studware;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -32,11 +34,15 @@ public class IcsGenerator {
 	}
 
 	private String addAllLocations(ArrayList<String> rooms) {
-		String result = "";
-		for (String room : rooms) {
-			result = result + room + "\\, ";
+		if(rooms.size() > 0) {
+			String result = "";
+			for (String room : rooms) {
+				result = result + room + "\\, ";
+			}
+			return result.substring(0, result.length() - 3);
+		} else {
+			return "";
 		}
-		return result.substring(0, result.length() - 3);
 	}
 
 	private String formatTime(String time) {
@@ -63,9 +69,16 @@ public class IcsGenerator {
 	public boolean createIcsDoc(String docname) {
 		File doc = new File(System.getProperty("user.home") + "\\Desktop\\" + docname);
 		StringBuilder builder = new StringBuilder();
-		builder.append("BEGIN:VCALENDAR" + System.lineSeparator());
-		builder.append("VERSION:2.0" + System.lineSeparator());
-		builder.append("PRODID:http://studware.de/java/" + System.lineSeparator());
+		try {
+			BufferedReader in = new BufferedReader(new FileReader("./src/data/CalendarStart.txt"));
+			String inputLine;
+			while ((inputLine = in.readLine()) != null) {
+				builder.append(inputLine + System.lineSeparator());
+			}
+			in.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		for (IcsEvent event : icsEvents) {
 			builder.append("BEGIN:VEVENT" + System.lineSeparator());
 			builder.append("DTSTART;" + event.getDtstart() + System.lineSeparator());
