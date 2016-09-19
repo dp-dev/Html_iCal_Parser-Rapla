@@ -4,8 +4,9 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
@@ -67,10 +68,12 @@ public class IcsGenerator {
 	}
 
 	public boolean createIcsDoc(String docname) {
+		System.out.println("I: Ics Doc will be created on the desktop");
 		File doc = new File(System.getProperty("user.home") + "\\Desktop\\" + docname);
 		StringBuilder builder = new StringBuilder();
 		try {
-			BufferedReader in = new BufferedReader(new FileReader("./src/data/CalendarStart.txt"));
+			InputStream input = getClass().getResourceAsStream("/data/CalendarStart.txt");
+			BufferedReader in = new BufferedReader(new InputStreamReader(input));
 			String inputLine;
 			while ((inputLine = in.readLine()) != null) {
 				builder.append(inputLine + System.lineSeparator());

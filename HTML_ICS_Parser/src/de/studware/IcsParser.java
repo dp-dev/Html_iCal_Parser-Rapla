@@ -56,6 +56,7 @@ public class IcsParser {
 	}
 	
 	private void parseRaplaUrl(String url) {
+		System.out.println("I: URL request: " + url);
 		try {
 			Document doc = Jsoup.connect(url).get();
 			Elements allEvents = doc.getElementsByClass("week_block");
@@ -99,6 +100,7 @@ public class IcsParser {
 	}
 
 	private HtmlEvent createEvent(String input) {
+		System.out.println("I: Event creation for: " + input);
 		HtmlEvent event;
 		String parts[] = input.split(" ");
 		if(!input.contains("wöchentlich") && !input.contains("Wochen")) {

@@ -23,6 +23,7 @@ public class Screen extends JFrame implements ActionListener {
 	}
 
 	public Screen() {
+		System.out.println("I: Screen init");
 		parser = new IcsParser();
 		this.setTitle("Rapla to iCal file parser");
 		this.setSize(300, 400);
@@ -55,8 +56,10 @@ public class Screen extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == btStart) {
+			System.out.println("I: Button pressed");
 			tfoutput.setText("");
 			parser.startProcess(this, tfUrl.getText());
+			System.out.println("I: Process finished");
 		}
 	}
 }
