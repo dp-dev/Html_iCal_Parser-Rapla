@@ -16,8 +16,10 @@ import data.IcsEvent;
 public class IcsGenerator {
 	ArrayList<HtmlEvent> eventInfos;
 	ArrayList<IcsEvent> icsEvents;
-
-	public IcsGenerator(ArrayList<HtmlEvent> eventInfos) {
+	IcsParserPreferences prefs;
+	
+	public IcsGenerator(ArrayList<HtmlEvent> eventInfos, IcsParserPreferences prefs) {
+		this.prefs = prefs;
 		this.eventInfos = eventInfos;
 		icsEvents = new ArrayList<>();
 	}
@@ -35,7 +37,7 @@ public class IcsGenerator {
 	}
 
 	private String addAllLocations(ArrayList<String> rooms) {
-		if(rooms.size() > 0) {
+		if (rooms.size() > 0) {
 			String result = "";
 			for (String room : rooms) {
 				result = result + room + "\\, ";
@@ -68,33 +70,39 @@ public class IcsGenerator {
 	}
 
 	public boolean createIcsDoc(String docname) {
-		System.out.println("I: Ics Doc will be created on the desktop");
-		File doc = new File(System.getProperty("user.home") + "\\Desktop\\" + docname);
-		StringBuilder builder = new StringBuilder();
-		try {
-			InputStream input = getClass().getResourceAsStream("/data/CalendarStart.txt");
-			BufferedReader in = new BufferedReader(new InputStreamReader(input));
-			String inputLine;
-			while ((inputLine = in.readLine()) != null) {
-				builder.append(inputLine + System.lineSeparator());
+		System.out.println("I: iCal document will be created in this folder: " + prefs.getStorageLocation());
+		File folder = new File(prefs.getStorageLocation());
+		if (folder.exists()) {
+			File doc = new File(prefs.getStorageLocation() + "\\" + docname);
+			StringBuilder builder = new StringBuilder();
+			try {
+				InputStream input = getClass().getResourceAsStream("/data/CalendarStart.txt");
+				BufferedReader in = new BufferedReader(new InputStreamReader(input));
+				String inputLine;
+				while ((inputLine = in.readLine()) != null) {
+					builder.append(inputLine + System.lineSeparator());
+				}
+				in.close();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			in.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+			for (IcsEvent event : icsEvents) {
+				builder.append("BEGIN:VEVENT" + System.lineSeparator());
+				builder.append("DTSTART;" + event.getDtstart() + System.lineSeparator());
+				builder.append("DTSTAMP:" + event.getDtstamp() + System.lineSeparator());
+				builder.append("DTEND;" + event.getDtend() + System.lineSeparator());
+				builder.append("SUMMARY:" + event.getSummary() + System.lineSeparator());
+				builder.append("UID:" + event.getUid() + System.lineSeparator());
+				builder.append("LOCATION:" + event.getLocation() + System.lineSeparator());
+				builder.append("CATEGORIES:" + event.getCategories() + System.lineSeparator());
+				builder.append("END:VEVENT" + System.lineSeparator());
+			}
+			builder.append("END:VCALENDAR" + System.lineSeparator());
+			return writeToFile(doc, builder.toString(), false);
+		} else {
+			System.err.println("E: Storage folder doesn't exists: " + prefs.getStorageLocation());
+			return false;
 		}
-		for (IcsEvent event : icsEvents) {
-			builder.append("BEGIN:VEVENT" + System.lineSeparator());
-			builder.append("DTSTART;" + event.getDtstart() + System.lineSeparator());
-			builder.append("DTSTAMP:" + event.getDtstamp() + System.lineSeparator());
-			builder.append("DTEND;" + event.getDtend() + System.lineSeparator());
-			builder.append("SUMMARY:" + event.getSummary() + System.lineSeparator());
-			builder.append("UID:" + event.getUid() + System.lineSeparator());
-			builder.append("LOCATION:" + event.getLocation() + System.lineSeparator());
-			builder.append("CATEGORIES:" + event.getCategories() + System.lineSeparator());
-			builder.append("END:VEVENT" + System.lineSeparator());
-		}
-		builder.append("END:VCALENDAR" + System.lineSeparator());
-		return writeToFile(doc, builder.toString(), false);
 	}
 	
 	private boolean writeToFile(File doc, String message, boolean append) {

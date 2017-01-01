@@ -1,5 +1,5 @@
 BEGIN:VCALENDAR
-VERSION:2.0
+VERSION:2.5
 PRODID:http://studware.de/java/
 BEGIN:VTIMEZONE
 TZID:Europe/Berlin
