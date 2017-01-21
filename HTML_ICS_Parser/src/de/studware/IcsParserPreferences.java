@@ -12,11 +12,11 @@ public class IcsParserPreferences {
 	private final static File STORAGE_FOLDER = new File(System.getProperty("user.home") + "\\iCal-Parser");
 	private final static File STORAGE_DOCUMENT = new File(System.getProperty("user.home") + "\\iCal-Parser\\parser_user_prefs.properties");
 	private final String KEYWORDS[] = { "PREF_URL_PATH", "PREF_WEEKS", "PREF_STORAGE" };
-
+	
 	private String urlPath, storageLocation;
 	private int weeksToGet;
 	private boolean customSettings;
-
+	
 	public IcsParserPreferences() {
 		customSettings = checkIfCustomSettingsAvailable();
 		if (customSettings) {
@@ -25,21 +25,21 @@ public class IcsParserPreferences {
 			setDefaultSettings();
 		}
 	}
-
+	
 	private void setDefaultSettings() {
 		customSettings = false;
 		urlPath = "";
 		storageLocation = System.getProperty("user.home") + "\\Desktop";
 		weeksToGet = 4;
 	}
-	
+
 	public void setCustomSettings(String url, String location, int weeks) {
 		customSettings = true;
 		urlPath = url;
 		storageLocation = location;
 		weeksToGet = weeks;
 	}
-
+	
 	private boolean checkIfCustomSettingsAvailable() {
 		if (STORAGE_FOLDER.exists()) {
 			if (STORAGE_DOCUMENT.exists()) {
@@ -48,7 +48,7 @@ public class IcsParserPreferences {
 		}
 		return false;
 	}
-
+	
 	public void writeSettingsToFile() {
 		if (!STORAGE_FOLDER.exists()) {
 			STORAGE_FOLDER.mkdir();
@@ -66,8 +66,9 @@ public class IcsParserPreferences {
 			e.printStackTrace();
 		}
 	}
-
+	
 	public void deleteSettingsFile() {
+		System.out.println("I: Settings file deleted: " + STORAGE_DOCUMENT);
 		if (STORAGE_DOCUMENT.exists()) {
 			STORAGE_DOCUMENT.delete();
 		}
@@ -76,7 +77,7 @@ public class IcsParserPreferences {
 		}
 		setDefaultSettings();
 	}
-	
+
 	private void readSettingsFromFile() {
 		System.out.println("I: Read file: " + STORAGE_DOCUMENT);
 		BufferedReader reader = null;
@@ -103,7 +104,7 @@ public class IcsParserPreferences {
 		}
 		getValuesFromList(prefList);
 	}
-
+	
 	private void getValuesFromList(ArrayList<String> prefList) {
 		for (String pref : prefList) {
 			String parts[] = pref.split("=:=");
@@ -116,21 +117,21 @@ public class IcsParserPreferences {
 			}
 		}
 	}
-
+	
 	public String getUrlPath() {
 		return urlPath;
 	}
-
+	
 	public String getStorageLocation() {
 		return storageLocation;
 	}
-
+	
 	public int getWeeksToGet() {
 		return weeksToGet;
 	}
-
+	
 	public boolean isCustomSettings() {
 		return customSettings;
 	}
-
+	
 }

@@ -1,18 +1,14 @@
 package de.studware;
 
 import java.awt.Desktop;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.swing.JMenuItem;
-
 import display.InitScreen;
 import display.PrefScreen;
 
-public class Control implements ActionListener {
+public class Control {
 	IcsParserPreferences prefs;
 	InitScreen screen;
 	
@@ -25,38 +21,22 @@ public class Control implements ActionListener {
 		prefs = new IcsParserPreferences();
 		screen = new InitScreen(this, prefs);
 	}
+
+	public void displayInfo(String text) {
+		screen.addInfo(text);
+	}
 	
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == screen.getBtStart()) {
-			if (!screen.getTfUrl().getText().isEmpty()) {
-				screen.getTaOutput().setText("");
-				new IcsParser().startProcess(screen, screen.getTfUrl().getText(), prefs);
-			}
-		} else if (e.getSource() instanceof JMenuItem) {
-			if (e.getSource() == screen.getMiClearInput()) {
-				screen.getTfUrl().setText("");
-				screen.getTaOutput().setText("");
-			} else if (e.getSource() == screen.getMiReportBug()) {
-				openWebpage(
-						"mailto:development@studware.de?subject=iCal%20File%20Parser%20bug%20report&body=Please%20specify%20as%20many%20details%20as%20possible%20about%20the%20bug%20that%20occurred%20as%20well%20as%20the%20url%20you%20were%20trying%20to%20access.%0A%0AURL%3A%20"
-								+ screen.getTfUrl().getText() + "%0ADetails%20about%20the%20bug%3A%0A",
-						false);
-			} else if (e.getSource() == screen.getMiExit()) {
-				System.exit(0);
-			} else if (e.getSource() == screen.getMiSettings()) {
-				new PrefScreen(screen, prefs);
-			} else if (e.getSource() == screen.getMiWebsite()) {
-				openWebpage("http://studware.de/java/", true);
-			} else if (e.getSource() == screen.getMiFacebook()) {
-				openWebpage("https://www.facebook.com/studware/", true);
-			} else if (e.getSource() == screen.getMiTwitter()) {
-				openWebpage("https://twitter.com/studwarede", true);
-			}
-		}
+	public void openPrefScreen() {
+		new PrefScreen(screen, prefs);
+	}
+	
+	public void startProcess(String url) {
+		IcsParser parser = new IcsParser();
+		url = parser.removeUnusedParamsInUrl(url);
+		parser.startCalenderPulling(this, url, prefs);
 	}
 
-	private void openWebpage(String url, boolean openWebsite) {
+	public void openWebpage(String url, boolean openWebsite) {
 		Desktop desktop;
 		try {
 			URI uri = new URI(url);
@@ -75,5 +55,5 @@ public class Control implements ActionListener {
 			e.printStackTrace();
 		}
 	}
-
+	
 }

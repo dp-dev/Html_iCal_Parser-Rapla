@@ -144,15 +144,13 @@ public class PrefScreen implements ActionListener, ChangeListener, WindowListene
 			System.out.println("I: Settings applied");
 			if (rbDefault.isSelected()) {
 				prefs.deleteSettingsFile();
-				screen.getTfUrl().setText(prefs.getUrlPath());
-				screen.getTaOutput().setText("");
+				screen.setURLandClear(prefs.getUrlPath());
 				prefFrame.dispose();
 			} else if (!tfUrl.getText().isEmpty()) {
 				if (!tfStorage.getText().isEmpty()) {
 					prefs.setCustomSettings(tfUrl.getText(), tfStorage.getText(), slWeeks.getValue());
 					prefs.writeSettingsToFile();
-					screen.getTfUrl().setText(prefs.getUrlPath());
-					screen.getTaOutput().setText("");
+					screen.setURLandClear(prefs.getUrlPath());
 					prefFrame.dispose();
 				} else {
 					JOptionPane.showMessageDialog(prefFrame, "Please provide a storage location", "Urlpath empty", JOptionPane.ERROR_MESSAGE);

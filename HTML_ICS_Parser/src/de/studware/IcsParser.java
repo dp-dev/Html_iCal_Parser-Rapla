@@ -12,41 +12,48 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import data.HtmlEvent;
-import display.InitScreen;
 
 public class IcsParser {
 	ArrayList<HtmlEvent> eventInfos = new ArrayList<>();
-	InitScreen screen;
+	Control control;
 	int currentWeek, currentday;
 
-	public void startProcess(InitScreen screen, String baseurl, IcsParserPreferences prefs) {
+	public String removeUnusedParamsInUrl(String url) {
+		System.out.println("I: Check URL for parameters and remove them");
+		if (url.contains("&day=")) {
+			url.substring(0, url.indexOf("&day="));
+		}
+		return url;
+	}
+
+	public void startCalenderPulling(Control control, String baseurl, IcsParserPreferences prefs) {
 		System.out.println("I: Process to generate iCal document started");
-		this.screen = screen;
+		this.control = control;
 		eventInfos.clear();
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Calendar cal = Calendar.getInstance();
 		for (int i = 0; i < prefs.getWeeksToGet(); i++) {
 			currentWeek = cal.get(Calendar.WEEK_OF_YEAR);
 			currentday = 0;
-			screen.addInfo("Getting events for week " + currentWeek);
+			control.displayInfo("Getting events for week " + currentWeek);
 			parseRaplaUrl(baseurl + addUrlTimeParameters(dateFormat.format(cal.getTime())));
 			cal.add(Calendar.DATE, 7);
-			screen.addInfo("");
+			control.displayInfo("");
 		}
 		if (eventInfos.size() > 0) {
-			screen.addInfo("Starting to parse information into iCal format");
+			control.displayInfo("Starting to parse information into iCal format");
 			IcsGenerator generator = new IcsGenerator(eventInfos, prefs);
 			generator.generateIcsEvents();
 			if (generator.createIcsDoc("Calendar-Export.ics")) {
-				screen.addInfo("- iCal file was created successfully");
+				control.displayInfo("- iCal file was created successfully");
 			} else {
-				screen.addInfo("- iCal file creation failed - Sorry please check your custom storage folder!");
+				control.displayInfo("- iCal file creation failed - Sorry please check your custom storage folder!");
 			}
 		}
 		if (eventInfos.size() != 1) {
-			screen.addInfo("- Program finished with getting " + eventInfos.size() + " events.");
+			control.displayInfo("- Program finished with getting " + eventInfos.size() + " events.");
 		} else {
-			screen.addInfo("- Program finished with getting 1 event.");
+			control.displayInfo("- Program finished with getting 1 event.");
 		}
 		System.out.println("I: Process to generate iCal document finished");
 	}
@@ -84,11 +91,11 @@ public class IcsParser {
 					}
 				}
 				if (eventInfos.add(newEvent)) {
-					screen.addInfo("- Event: " + newEvent.getTitle());
+					control.displayInfo("- Event: " + newEvent.getTitle());
 				}
 			}
 		} catch (IOException e) {
-			screen.addInfo("- Error while getting the online calender");
+			control.displayInfo("- Error while getting the online calender");
 			e.printStackTrace();
 		}
 	}
