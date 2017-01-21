@@ -31,9 +31,12 @@ public class Control {
 	}
 	
 	public void startProcess(String url) {
-		IcsParser parser = new IcsParser();
-		url = parser.removeUnusedParamsInUrl(url);
-		parser.startCalenderPulling(this, url, prefs);
+		url = OnlineUtils.removeUnusedParamsInUrl(url);
+		if (OnlineUtils.isRaplaAvailable(url)) {
+			new IcsParser().startCalenderPulling(this, url, prefs);
+		} else {
+			displayInfo("Rapla calender is currently not available." + System.lineSeparator() + "Check your internet connection and proxy settings and try again later.");
+		}
 	}
 
 	public void openWebpage(String url, boolean openWebsite) {

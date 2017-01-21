@@ -18,14 +18,6 @@ public class IcsParser {
 	Control control;
 	int currentWeek, currentday;
 
-	public String removeUnusedParamsInUrl(String url) {
-		System.out.println("I: Check URL for parameters and remove them");
-		if (url.contains("&day=")) {
-			url.substring(0, url.indexOf("&day="));
-		}
-		return url;
-	}
-
 	public void startCalenderPulling(Control control, String baseurl, IcsParserPreferences prefs) {
 		System.out.println("I: Process to generate iCal document started");
 		this.control = control;
