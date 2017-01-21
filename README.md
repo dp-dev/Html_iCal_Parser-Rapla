@@ -11,6 +11,7 @@ Visit the [STUDWARE JAVA Corner](http://studware.de/java/) and download the jar 
 - [X] Resizeable screen
 - [X] E-mail bug reporting
 - [X] Default and user preference (Url, weeks, storage location)
+- [X] Check if URL points to a valid DHBW Rapla calendar
 
 ### Feedback, Questions?
 You can contact us for any questions or feedback via our [STUDWARE Facebook Fanpage](https://www.facebook.com/studware).
